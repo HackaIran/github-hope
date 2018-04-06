@@ -104,7 +104,7 @@ class Checker {
                     this.checkReadme();
 
                 }).then(() => {
-                    resolve();
+                    resolve(this.get());
                 })
 
             }).catch((e)=>{
