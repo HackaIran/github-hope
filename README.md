@@ -1,4 +1,4 @@
-# hope
+# github-hope
 [H]ackademy [O]pen-source [P]rojects [E]valuator
 
 ## Installation
