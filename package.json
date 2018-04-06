@@ -49,5 +49,9 @@
   "engines": {
     "node": ">=4.2.1",
     "npm": ">=3"
+  },
+  "dependencies": {
+    "axios": "^0.18.0",
+    "string-similarity": "^1.2.0"
   }
 }
