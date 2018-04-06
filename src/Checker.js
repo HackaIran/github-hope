@@ -68,6 +68,7 @@ class Checker {
 
             axios.get("https://api.github.com/repos/" + this.owner + "/" + this.repositoryName + "/" + name).then((result) => {
                 axios.get(result.data.download_url).then((file) => {
+                    console.log(file.data)
                     resolve(file.data);
                 }).catch((e) => {
                     reject(e);
@@ -77,6 +78,33 @@ class Checker {
             })
 
         })
+    }
+
+    /**
+     * 
+     * Returns best match between an array of textx and array of texts
+     * 
+     * @param {Array} mainStrings
+     * 
+     * @param {Array} texts
+     * 
+     * @param {Integer} minPercentage
+     * 
+     */
+
+    findBestMatch(mainStrings, texts, minPercentage) {
+
+        let result;
+
+        for(let index in mainStrings){
+            result = stringSimilarity.findBestMatch(mainStrings[index], texts);
+            if (result.bestMatch.rating * 100 >= minPercentage) {
+                return result.bestMatch.target;
+            } else {
+                return false;
+            }
+        }   
+
     }
 
     /**
@@ -212,7 +240,7 @@ class Checker {
 
     checkReadme() {
 
-        return new Promise((resolve,reject)=>{
+        return new Promise((resolve, reject) => {
 
             // Let's get the readme file
 
@@ -224,26 +252,28 @@ class Checker {
 
                 let headings = [];
 
-                while ((temp = headingRegEx.exec(file)) !== null) {// Finding headings
+                let rawHeadings = [];
+
+                while ((temp = headingRegEx.exec(file)) !== null) { // Finding headings
                     headings.push(temp);
+                    rawHeadings.push(temp[1]);
                 }
 
                 file += "\n#"; // For regex
 
                 // Let's check whether it has a heading or not
 
-                let properHeading = headings.filter(item => {
-                    if (stringSimilarity.compareTwoStrings(item[1], this.repositoryName) * 100 > 80) {
-                        return item;
-                    }
-                });
+                let properHeading = this.findBestMatch([this.repositoryName], rawHeadings, 80);
 
-                if (properHeading.length != 0) {
+                if (properHeading) {
+
                     // has heading
 
-                    properHeading = properHeading[0];
-
-                    if(!/#{1}[^#]+/.test(properHeading[0])){
+                    if (!/#{1}[^#]+/.test(headings.filter(item => {
+                            if (item[1] == properHeading) {// find the text with md style
+                                return item[0]
+                            }
+                        }))) {
                         // it is not in h1
 
                         this.report.results.push({
@@ -263,27 +293,27 @@ class Checker {
 
                     // Now that it has a heading for his/her project, let's check the description of it
 
-                    let descriptionRegex = new RegExp(properHeading[0]+'(.+?)#','s');
+                    let descriptionRegex = new RegExp(properHeading + '(.+?)#', 's');
 
                     let description = descriptionRegex.exec(file);
 
                     description = description[1].trim()
 
-                    if(description){
+                    if (description) {
 
                         // it has description
 
                         this.report.results.push({
-                            type:"HeadingDescription",
-                            status:"Success",
-                            message:"Thanks for adding a Description about your project."
+                            type: "HeadingDescription",
+                            status: "Success",
+                            message: "Thanks for adding a Description about your project."
                         });
 
-                    }else{
+                    } else {
                         this.report.results.push({
-                            type:"HeadingDescription",
-                            status:"Fail",
-                            message:"Add a brief description about your project, please."
+                            type: "HeadingDescription",
+                            status: "Fail",
+                            message: "Add a brief description about your project, please."
                         });
                     }
 
@@ -301,93 +331,81 @@ class Checker {
 
                 // Let's check for Installation Guide
 
-                let properInstallationHeading = headings.filter(item => {
-                    if ((stringSimilarity.compareTwoStrings("Installation", item[1]) * 100 > 80) ||  ((stringSimilarity.compareTwoStrings("Installation Guide", item[1]) * 100 > 80))){
-                        return item;
-                    }
-                });
-
-                if(properInstallationHeading.length != 0){
-
-                    properInstallationHeading = properInstallationHeading[0];
+                let properInstallationHeading = this.findBestMatch(["Installation","Installation Guide"],rawHeadings,80);
+                
+                if (properInstallationHeading) {
 
                     // There is an installation guide
 
                     // Let's check for description
 
-                    let descriptionRegex = new RegExp(properInstallationHeading[0]+'(.+?)#','s');
+                    let descriptionRegex = new RegExp(properInstallationHeading + '(.+?)#', 's');
 
                     let description = descriptionRegex.exec(file);
 
                     description = description[1].trim()
 
-                    if(description){
+                    if (description) {
 
                         // it has description
 
                         this.report.results.push({
-                            type:"installtaion-guide-description",
-                            status:"Success",
-                            message:"Thanks for adding a Description about Installation Guide."
+                            type: "installtaion-guide-description",
+                            status: "Success",
+                            message: "Thanks for adding a Description about Installation Guide."
                         });
 
-                    }else{
+                    } else {
                         this.report.results.push({
-                            type:"installtaion-guide-description",
-                            status:"Fail",
-                            message:"Add a brief Installation Guide about your project, please."
+                            type: "installtaion-guide-description",
+                            status: "Fail",
+                            message: "Add a brief Installation Guide about your project, please."
                         });
                     }
 
-                }else{
+                } else {
 
                     // There is not installation guides
 
                     this.report.results.push({
-                        type:"installation-guide",
-                        status:"Fail",
-                        message:"Please add a Installation Guide in your REAME file."
+                        type: "installation-guide",
+                        status: "Fail",
+                        message: "Please add a Installation Guide in your REAME file."
                     });
 
                 }
 
                 // Let's check for Usage Guide
 
-                let properUsageHeading = headings.filter(item => {
-                    if ((stringSimilarity.compareTwoStrings("Usage", item[1]) * 100 > 80) ||  ((stringSimilarity.compareTwoStrings("How to Use", item[1]) * 100 > 80))){
-                        return item;
-                    }
-                });
+                let properUsageHeading = this.findBestMatch(["Usage","How to Use"],rawHeadings,80);
 
-                if(properUsageHeading.length != 0){
-
-                    properUsageHeading = properUsageHeading[0];
+                if (properUsageHeading) {
 
                     // There is an usage guide
 
                     // Let's check for description
 
-                    let descriptionRegex = new RegExp(properUsageHeading[0]+'(.+?)#','s');
+                    let descriptionRegex = new RegExp(properUsageHeading + '(.+?)#', 's');
 
                     let description = descriptionRegex.exec(file);
 
                     description = description[1].trim()
 
-                    if(description){
+                    if (description) {
 
                         // it has description
 
                         this.report.results.push({
-                            type:"installtaion-guide-description",
-                            status:"Success",
-                            message:"Thanks for adding a Description about Usage Guide."
+                            type: "installtaion-guide-description",
+                            status: "Success",
+                            message: "Thanks for adding a Description about Usage Guide."
                         });
 
-                    }else{
+                    } else {
                         this.report.results.push({
-                            type:"installtaion-guide-description",
-                            status:"Fail",
-                            message:"Add a brief Usage Guide about your project, please."
+                            type: "installtaion-guide-description",
+                            status: "Fail",
+                            message: "Add a brief Usage Guide about your project, please."
                         });
                     }
 
@@ -396,9 +414,101 @@ class Checker {
                     // There is not usage guides
 
                     this.report.results.push({
-                        type:"usage-guide",
-                        status:"Fail",
-                        message:"Please add a Usage Guide in your README file."
+                        type: "usage-guide",
+                        status: "Fail",
+                        message: "Please add a Usage Guide in your README file."
+                    });
+
+                }
+
+                // check license in README.md
+
+                let licenseHeading = this.findBestMatch(["license"],rawHeadings,80);
+
+                if (licenseHeading) {
+
+                    // There is an license
+
+                    // Let's check for description
+
+                    let descriptionRegex = new RegExp(licenseHeading + '(.+?)#', 's');
+
+                    let description = descriptionRegex.exec(file);
+
+                    description = description[1].trim()
+
+                    if (description) {
+
+                        // it has description
+
+                        this.report.results.push({
+                            type: "readme-license",
+                            status: "Success",
+                            message: "Thanks for adding a License in README.md."
+                        });
+
+                    } else {
+                        this.report.results.push({
+                            type: "readme-license",
+                            status: "Fail",
+                            message: "Add a license into README.md, please."
+                        });
+                    }
+
+                } else {
+
+                    // There is no license
+
+                    this.report.results.push({
+                        type: "readme-license",
+                        status: "Fail",
+                        message: "Please add a license in your README file."
+                    });
+
+                }
+
+                // check contribution guide in the README.md
+
+                let contributeHeading = this.findBestMatch(["contribution","contribution guide","how to contribute"],rawHeadings,80);
+
+                if (contributeHeading) {
+
+                    // There is an contribution guide
+
+                    // Let's check for description
+
+                    let descriptionRegex = new RegExp(contributeHeading + '(.+?)#', 's');
+
+                    let description = descriptionRegex.exec(file);
+
+                    description = description[1].trim()
+
+                    if (description) {
+
+                        // it has description
+
+                        this.report.results.push({
+                            type: "readme-contribution-guide",
+                            status: "Success",
+                            message: "Thanks for adding a contribution guide in README.md."
+                        });
+
+                    } else {
+                        this.report.results.push({
+                            type: "readme-contribution-guide",
+                            status: "Fail",
+                            message: "Add a contribution guide into README.md, please."
+                        });
+                    }
+
+                } else {
+
+                    // There is no license
+
+                    this.report.results.push({
+                        type: "readme-contribution-guide",
+                        status: "Fail",
+                        message: "Please add a contribution guide in your README file."
                     });
 
                 }
