@@ -93,8 +93,6 @@ class Checker {
 
             this.getCommunity().then((community) => {
 
-                console.log(community);
-
                 this.criticalFiles = community.files;
 
                 // Check for important files
