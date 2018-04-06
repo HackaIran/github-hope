@@ -1,7 +1,7 @@
 {
-  "version": "0.1.1",
+  "version": "0.1.3",
   "name": "github-hope",
-  "description": "[H]ackademy [O]pen-source [P]rojects [E]valuator",
+  "description": "Github Projects Evaluator npm package, which used in HOPE",
   "author": "HackaIran <dev@hackairan.com>",
   "license": "MIT",
   "homepage": "https://github.com/HackaIran/github-hope",
