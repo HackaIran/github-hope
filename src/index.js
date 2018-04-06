@@ -1,11 +1,11 @@
 const Checker = require("./Checker");
 
 /**
- * Represents main hope function
+ * Evaluate function of hope
  * @param {string} url a git repository's url which will be checked
  * @returns {Promise} a promise including test results
  */
-module.exports = function hope (url) {
+const evaluate = (url) => {
 
     return new Promise ((resolve, reject) => {
 
@@ -21,12 +21,14 @@ module.exports = function hope (url) {
 
         // Let's parse the repository
 
-        checker.parse().then(()=>{
+        checker.parse().then(result => {
 
-            console.log(checker.get());
+            console.log(result);
 
         });
 
     })
 
 }
+
+module.exports = { evaluate }
