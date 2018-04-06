@@ -4,13 +4,13 @@
   "description": "[H]ackademy [O]pen-source [P]rojects [E]valuator",
   "author": "HackaIran <dev@hackairan.com>",
   "license": "MIT",
-  "homepage": "https://github.com/HackaIran/hope",
+  "homepage": "https://github.com/HackaIran/github-hope",
   "repository": {
     "type": "git",
-    "url": "https://github.com/HackaIran/hope.git"
+    "url": "https://github.com/HackaIran/github-hope.git"
   },
   "bugs": {
-    "url": "https://github.com/HackaIran/hope/issues"
+    "url": "https://github.com/HackaIran/github-hope/issues"
   },
   "main": "index.js",
   "scripts": {
