@@ -12,7 +12,7 @@ module.exports = function hope (url) {
         // Let's check whether url is valid or not
 
         if(!/^(?:http|https):\/\/github\.com\/[\w-]+?\/[\w-]+?$/i.test(url)){
-            reject("Error: Url is not valid!");
+            reject(new Error("Url is not valid!"));
         }
 
         // Let's initiate checker
