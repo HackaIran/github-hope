@@ -104,7 +104,7 @@ class Checker {
                     this.checkReadme();
 
                 }).then(() => {
-                    resolve();
+                    resolve(this.get());
                 })
 
             }).catch((e)=>{
@@ -146,7 +146,7 @@ class Checker {
 
             // Let's check for contributing file
 
-            if (this.criticalFiles.contributing) { // if code of conduct exists
+            if (this.criticalFiles.contributing) { // if contributing exists
 
                 this.report.results.push({
                     type: "Contributing",
@@ -166,7 +166,7 @@ class Checker {
 
             // Let's check for license
 
-            if (this.criticalFiles.license) { // if code of conduct exists
+            if (this.criticalFiles.license) { // if license exists
 
                 this.report.results.push({
                     type: "License",
@@ -186,7 +186,7 @@ class Checker {
 
             // Let's check for readme
 
-            if (this.criticalFiles.readme) { // if code of conduct exists
+            if (this.criticalFiles.readme) { // if readme exists
 
                 this.report.results.push({
                     type: "Readme",
@@ -239,7 +239,7 @@ class Checker {
             // Let's check whether it has a heading or not
 
             let properHeading = headings.filter(item => {
-                if (stringSimilarity.compareTwoStrings(item[1], this.repositoryName) * 100 > 30) {
+                if (stringSimilarity.compareTwoStrings(item[1], this.repositoryName) * 100 > 80) {
                     return item;
                 }
             });
@@ -249,17 +249,16 @@ class Checker {
 
                 properHeading = properHeading[0];
 
-                if(/#{1}[^#]+/.test(properHeading[0])){
-                    // it is h1
+                if(!/#{1}[^#]+/.test(properHeading[0])){
+                    // it is not in h1
 
                     this.report.results.push({
                         type: "Heading",
-                        status: "success",
-                        message: "I can see your projects name.👀"
+                        status: "warning",
+                        message: "Your project name is not in #..."
                     });
 
-                }else{
-                    // it is not h1
+
                 }
 
                 this.report.results.push({
@@ -273,6 +272,8 @@ class Checker {
                 let descriptionRegex = new RegExp(properHeading[0]+'(.+?)#','s');
 
                 let description = descriptionRegex.exec(file);
+
+                description = description[1].trim()
 
                 if(description){
 
@@ -306,9 +307,109 @@ class Checker {
 
             // Let's check for Installation Guide
 
-            
+            let properInstallationHeading = headings.filter(item => {
+                if ((stringSimilarity.compareTwoStrings("Installation", item[1]) * 100 > 80) ||  ((stringSimilarity.compareTwoStrings("Installation Guide", item[1]) * 100 > 80))){
+                    return item;
+                }
+            });
 
+            if(properInstallationHeading.length != 0){
 
+                properInstallationHeading = properInstallationHeading[0];
+
+                // There is an installation guide
+
+                // Let's check for description
+
+                let descriptionRegex = new RegExp(properInstallationHeading[0]+'(.+?)#','s');
+
+                let description = descriptionRegex.exec(file);
+
+                description = description[1].trim()
+
+                if(description){
+
+                    // it has description
+
+                    this.report.results.push({
+                        type:"installtaion-guide-description",
+                        status:"Success",
+                        message:"Thanks for adding a Description about Installation Guide."
+                    });
+
+                }else{
+                    this.report.results.push({
+                        type:"installtaion-guide-description",
+                        status:"Fail",
+                        message:"Add a brief Installation Guide about your project, please."
+                    });
+                }
+
+            }else{
+
+                // There is not installation guides
+
+                this.report.results.push({
+                    type:"installation-guide",
+                    status:"Fail",
+                    message:"Please add a Installation Guide in your REAME file."
+                });
+
+            }
+
+            // Let's check for Usage Guide
+
+            let properUsageHeading = headings.filter(item => {
+                if ((stringSimilarity.compareTwoStrings("Usage", item[1]) * 100 > 80) ||  ((stringSimilarity.compareTwoStrings("How to Use", item[1]) * 100 > 80))){
+                    return item;
+                }
+            });
+
+            if(properUsageHeading.length != 0){
+
+                properUsageHeading = properUsageHeading[0];
+
+                // There is an usage guide
+
+                // Let's check for description
+
+                let descriptionRegex = new RegExp(properUsageHeading[0]+'(.+?)#','s');
+
+                let description = descriptionRegex.exec(file);
+
+                description = description[1].trim()
+
+                if(description){
+
+                    // it has description
+
+                    this.report.results.push({
+                        type:"installtaion-guide-description",
+                        status:"Success",
+                        message:"Thanks for adding a Description about Usage Guide."
+                    });
+
+                }else{
+                    this.report.results.push({
+                        type:"installtaion-guide-description",
+                        status:"Fail",
+                        message:"Add a brief Usage Guide about your project, please."
+                    });
+                }
+
+            }else{
+
+                // There is not usage guides
+
+                this.report.results.push({
+                    type:"usage-guide",
+                    status:"Fail",
+                    message:"Please add a Usage Guide in your README file."
+                });
+
+            }
+
+            console.log(this.report.results)
 
         })
 
