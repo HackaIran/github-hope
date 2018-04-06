@@ -1,5 +1,5 @@
 # github-hope
-[H]ackademy [O]pen-source [P]rojects [E]valuator
+Github Projects Evaluator npm package, which used in HOPE
 
 ## Installation
 ```bash
