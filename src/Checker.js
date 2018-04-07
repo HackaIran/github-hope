@@ -312,7 +312,7 @@ class Checker {
                         // it is not in h1
 
                         this.report.results.push({
-                            type: "Heading",
+                            type: "readme-project-name",
                             status: "warning",
                             message: "Your project name is not in #..."
                         });
@@ -321,7 +321,7 @@ class Checker {
                     }
 
                     this.report.results.push({
-                        type: "Heading",
+                        type: "readme-project-name",
                         status: "success",
                         message: "I can see your project name.👀"
                     });
@@ -339,14 +339,14 @@ class Checker {
                         // it has description
 
                         this.report.results.push({
-                            type: "HeadingDescription",
+                            type: "readme-description",
                             status: "Success",
                             message: "Thanks for adding a Description about your project."
                         });
 
                     } else {
                         this.report.results.push({
-                            type: "HeadingDescription",
+                            type: "readme-description",
                             status: "Fail",
                             message: "Add a brief description about your project, please."
                         });
@@ -357,7 +357,7 @@ class Checker {
                     // Doesn't have a heading
 
                     this.report.results.push({
-                        type: "Heading",
+                        type: "readme-project-name",
                         status: "Fail",
                         message: "Your project doesn’t have a name!? Please use our guide to choose a name for it."
                     });
@@ -385,14 +385,14 @@ class Checker {
                         // it has description
 
                         this.report.results.push({
-                            type: "installtaion-guide-description",
+                            type: "readme-installtaion-guide-description",
                             status: "Success",
                             message: "Thanks for adding a Description about Installation Guide."
                         });
 
                     } else {
                         this.report.results.push({
-                            type: "installtaion-guide-description",
+                            type: "readme-installtaion-guide-description",
                             status: "Fail",
                             message: "Add a brief Installation Guide about your project, please."
                         });
@@ -403,9 +403,9 @@ class Checker {
                     // There is not installation guides
 
                     this.report.results.push({
-                        type: "installation-guide",
+                        type: "readme-installation-guide",
                         status: "Fail",
-                        message: "Please add a Installation Guide in your REAME file."
+                        message: "Please add a Installation Guide in your README file."
                     });
 
                 }
@@ -431,14 +431,14 @@ class Checker {
                         // it has description
 
                         this.report.results.push({
-                            type: "usage-guide-description",
+                            type: "readme-usage-guide-description",
                             status: "Success",
                             message: "Thanks for adding a Description about Usage Guide."
                         });
 
                     } else {
                         this.report.results.push({
-                            type: "usage-guide-description",
+                            type: "readme-usage-guide-description",
                             status: "Fail",
                             message: "Add a brief Usage Guide about your project, please."
                         });
@@ -449,7 +449,7 @@ class Checker {
                     // There is not usage guides
 
                     this.report.results.push({
-                        type: "usage-guide",
+                        type: "readme-usage-guide",
                         status: "Fail",
                         message: "Please add a Usage Guide in your README file."
                     });
