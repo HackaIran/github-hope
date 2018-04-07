@@ -132,10 +132,10 @@ class Checker {
             result = stringSimilarity.findBestMatch(mainStrings[index], texts);
             if (result.bestMatch.rating * 100 >= minPercentage) {
                 return result.bestMatch.target;
-            } else {
-                return false;
             }
         }
+
+        return false;
 
     }
 
@@ -294,8 +294,6 @@ class Checker {
                     rawHeadings.push(temp[1]);
                 }
 
-                console.log(file.slice(0,3000))
-
                 file += "\n#"; // For regex
 
                 // Let's check whether it has a heading or not
@@ -414,7 +412,7 @@ class Checker {
 
                 // Let's check for Usage Guide
 
-                let properUsageHeading = this.findBestMatch(["Usage", "How to Use"], rawHeadings, 80);
+                let properUsageHeading = this.findBestMatch(["Usage", "How to Use","Examples"], rawHeadings, 80);
 
                 if (properUsageHeading) {
 
