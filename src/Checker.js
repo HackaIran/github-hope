@@ -431,14 +431,14 @@ class Checker {
                         // it has description
 
                         this.report.results.push({
-                            type: "installtaion-guide-description",
+                            type: "usage-guide-description",
                             status: "Success",
                             message: "Thanks for adding a Description about Usage Guide."
                         });
 
                     } else {
                         this.report.results.push({
-                            type: "installtaion-guide-description",
+                            type: "usage-guide-description",
                             status: "Fail",
                             message: "Add a brief Usage Guide about your project, please."
                         });
