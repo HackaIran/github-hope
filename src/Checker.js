@@ -291,7 +291,7 @@ class Checker {
 
                 while ((temp = headingRegEx.exec(file)) !== null) { // Finding headings
                     headings.push(temp);
-                    rawHeadings.push(temp[1]);
+                    rawHeadings.push(temp[1].trim());
                 }
 
                 file += "\n#"; // For regex
@@ -412,7 +412,7 @@ class Checker {
 
                 // Let's check for Usage Guide
 
-                let properUsageHeading = this.findBestMatch(["Usage", "How to Use","Examples"], rawHeadings, 80);
+                let properUsageHeading = this.findBestMatch(["Usage", "How to Use","Examples","Example of Use"], rawHeadings, 80);
 
                 if (properUsageHeading) {
 
