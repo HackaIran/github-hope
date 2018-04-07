@@ -10,7 +10,7 @@ class Checker {
 
         // Regex of the url
 
-        let githubRepRegex = /^(?:http|https):\/\/github\.com\/([\w-]+?)\/([\w-]+?)$/i;
+        let githubRepRegex = /^(?:http|https):\/\/github\.com\/([\w-]+?)\/([\w-]+?)(?:\.git|)$/i;
 
         // Let's get important parts
 

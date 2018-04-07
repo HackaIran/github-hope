@@ -11,7 +11,7 @@ const evaluate = (url) => {
 
         // Let's check whether url is valid or not
 
-        if(!/^(?:http|https):\/\/github\.com\/[\w-]+?\/[\w-]+?$/i.test(url)){
+        if(!/^(?:http|https):\/\/github\.com\/[\w-]+?\/[\w-]+?(?:\.git|)$/i.test(url)){
             reject(new Error("Url is not valid!"));
         }
 
