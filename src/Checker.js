@@ -47,10 +47,10 @@ class Checker {
 
     html2mdHeadings(text) {
 
-        text = text.replace(new RegExp('<h1.+?>(.+?)</h1>', 'g'), "# $1");
-        text = text.replace(new RegExp('<h2.+?>(.+?)</h2>', 'g'), "## $1");
-        text = text.replace(new RegExp('<h3.+?>(.+?)</h3>', 'g'), "### $1");
-        text = text.replace(new RegExp('<h4.+?>(.+?)</h4>', 'g'), "#### $1");
+        text = text.replace(new RegExp('<h1.*?>(.+?)</h1>', 'g'), "# $1");
+        text = text.replace(new RegExp('<h2.*?>(.+?)</h2>', 'g'), "## $1");
+        text = text.replace(new RegExp('<h3.*?>(.+?)</h3>', 'g'), "### $1");
+        text = text.replace(new RegExp('<h4.*?>(.+?)</h4>', 'g'), "#### $1");
 
         return text;
     }
@@ -278,8 +278,8 @@ class Checker {
 
             this.getFile("readme").then((file) => {
 
-                let fileData = this.html2mdHeadings(file.data);
-                fileData = this.rawHeadings(fileData);
+                file = this.html2mdHeadings(file);
+                file = this.rawHeadings(file);
 
                 let temp;
 
@@ -293,6 +293,8 @@ class Checker {
                     headings.push(temp);
                     rawHeadings.push(temp[1]);
                 }
+
+                console.log(file.slice(0,3000))
 
                 file += "\n#"; // For regex
 
