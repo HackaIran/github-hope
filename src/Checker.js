@@ -2,12 +2,6 @@ const axios = require("axios");
 
 const stringSimilarity = require("string-similarity");
 
-const TurndownService = require('turndown')
-
-//
-
-const turndownService = new TurndownService({headingStyle:"atx"});
-
 //
 
 class Checker {
@@ -45,6 +39,24 @@ class Checker {
 
     /**
      * 
+     * Parses html headings
+     * 
+     * @param {String} text
+     * 
+     */
+
+    html2mdHeadings(text){
+
+        text = text.replace(new RegExp('<h1.+?>(.+?)</h1>','g') ,"# $1");
+        text = text.replace(new RegExp('<h2.+?>(.+?)</h2>','g') ,"## $1");
+        text = text.replace(new RegExp('<h3.+?>(.+?)</h3>','g') ,"### $1");
+        text = text.replace(new RegExp('<h4.+?>(.+?)</h4>','g') ,"#### $1");
+
+        return text;
+    }
+
+    /**
+     * 
      * Function for taking information about important files on github
      * 
      */
@@ -76,7 +88,7 @@ class Checker {
 
             axios.get("https://api.github.com/repos/" + this.owner + "/" + this.repositoryName + "/" + name).then((result) => {
                 axios.get(result.data.download_url).then((file) => {
-                    let fileData = turndownService.turndown(file.data);
+                    let fileData = this.html2mdHeadings(file.data);
                     resolve(fileData);
                 }).catch((e) => {
                     reject(e);
@@ -477,7 +489,7 @@ class Checker {
 
                 // check contribution guide in the README.md
 
-                let contributeHeading = this.findBestMatch(["contribution","contribution guide","how to contribute"],rawHeadings,80);
+                let contributeHeading = this.findBestMatch(["Contributing","contribution","contribution guide","how to contribute"],rawHeadings,80);
 
                 if (contributeHeading) {
 
