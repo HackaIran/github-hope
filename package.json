@@ -52,6 +52,7 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
-    "string-similarity": "^1.2.0"
+    "string-similarity": "^1.2.0",
+    "turndown": "^4.0.1"
   }
 }

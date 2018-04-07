@@ -2,6 +2,14 @@ const axios = require("axios");
 
 const stringSimilarity = require("string-similarity");
 
+const TurndownService = require('turndown')
+
+//
+
+const turndownService = new TurndownService({headingStyle:"atx"});
+
+//
+
 class Checker {
 
     constructor(url) {
@@ -68,8 +76,8 @@ class Checker {
 
             axios.get("https://api.github.com/repos/" + this.owner + "/" + this.repositoryName + "/" + name).then((result) => {
                 axios.get(result.data.download_url).then((file) => {
-                    console.log(file.data)
-                    resolve(file.data);
+                    let fileData = turndownService.turndown(file.data);
+                    resolve(fileData);
                 }).catch((e) => {
                     reject(e);
                 })
@@ -288,7 +296,7 @@ class Checker {
                     this.report.results.push({
                         type: "Heading",
                         status: "success",
-                        message: "I can see your projects name.👀"
+                        message: "I can see your project name.👀"
                     });
 
                     // Now that it has a heading for his/her project, let's check the description of it
@@ -331,7 +339,7 @@ class Checker {
 
                 // Let's check for Installation Guide
 
-                let properInstallationHeading = this.findBestMatch(["Installation","Installation Guide"],rawHeadings,80);
+                let properInstallationHeading = this.findBestMatch(["Install","Installation","Installation Guide"],rawHeadings,80);
                 
                 if (properInstallationHeading) {
 
