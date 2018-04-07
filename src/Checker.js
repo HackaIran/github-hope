@@ -45,13 +45,26 @@ class Checker {
      * 
      */
 
-    html2mdHeadings(text){
+    html2mdHeadings(text) {
 
-        text = text.replace(new RegExp('<h1.+?>(.+?)</h1>','g') ,"# $1");
-        text = text.replace(new RegExp('<h2.+?>(.+?)</h2>','g') ,"## $1");
-        text = text.replace(new RegExp('<h3.+?>(.+?)</h3>','g') ,"### $1");
-        text = text.replace(new RegExp('<h4.+?>(.+?)</h4>','g') ,"#### $1");
+        text = text.replace(new RegExp('<h1.+?>(.+?)</h1>', 'g'), "# $1");
+        text = text.replace(new RegExp('<h2.+?>(.+?)</h2>', 'g'), "## $1");
+        text = text.replace(new RegExp('<h3.+?>(.+?)</h3>', 'g'), "### $1");
+        text = text.replace(new RegExp('<h4.+?>(.+?)</h4>', 'g'), "#### $1");
 
+        return text;
+    }
+
+    /**
+     * 
+     * Parses headings inside links into the raw text
+     * 
+     * @param {String} text
+     * 
+     */
+
+    rawHeadings(text) {
+        text = text.replace(/(#{1,}) \[(.+?)\]\(.+\)/g, "$1 $2");
         return text;
     }
 
@@ -88,8 +101,7 @@ class Checker {
 
             axios.get("https://api.github.com/repos/" + this.owner + "/" + this.repositoryName + "/" + name).then((result) => {
                 axios.get(result.data.download_url).then((file) => {
-                    let fileData = this.html2mdHeadings(file.data);
-                    resolve(fileData);
+                    resolve(file.data);
                 }).catch((e) => {
                     reject(e);
                 })
@@ -116,14 +128,14 @@ class Checker {
 
         let result;
 
-        for(let index in mainStrings){
+        for (let index in mainStrings) {
             result = stringSimilarity.findBestMatch(mainStrings[index], texts);
             if (result.bestMatch.rating * 100 >= minPercentage) {
                 return result.bestMatch.target;
             } else {
                 return false;
             }
-        }   
+        }
 
     }
 
@@ -266,6 +278,9 @@ class Checker {
 
             this.getFile("readme").then((file) => {
 
+                let fileData = this.html2mdHeadings(file.data);
+                fileData = this.rawHeadings(fileData);
+
                 let temp;
 
                 let headingRegEx = /#{1,}(.+)/g;
@@ -290,7 +305,7 @@ class Checker {
                     // has heading
 
                     if (!/#{1}[^#]+/.test(headings.filter(item => {
-                            if (item[1] == properHeading) {// find the text with md style
+                            if (item[1] == properHeading) { // find the text with md style
                                 return item[0]
                             }
                         }))) {
@@ -351,8 +366,8 @@ class Checker {
 
                 // Let's check for Installation Guide
 
-                let properInstallationHeading = this.findBestMatch(["Install","Installation","Installation Guide"],rawHeadings,80);
-                
+                let properInstallationHeading = this.findBestMatch(["Install", "Installation", "Installation Guide"], rawHeadings, 80);
+
                 if (properInstallationHeading) {
 
                     // There is an installation guide
@@ -397,7 +412,7 @@ class Checker {
 
                 // Let's check for Usage Guide
 
-                let properUsageHeading = this.findBestMatch(["Usage","How to Use"],rawHeadings,80);
+                let properUsageHeading = this.findBestMatch(["Usage", "How to Use"], rawHeadings, 80);
 
                 if (properUsageHeading) {
 
@@ -443,7 +458,7 @@ class Checker {
 
                 // check license in README.md
 
-                let licenseHeading = this.findBestMatch(["license"],rawHeadings,80);
+                let licenseHeading = this.findBestMatch(["license"], rawHeadings, 80);
 
                 if (licenseHeading) {
 
@@ -489,7 +504,7 @@ class Checker {
 
                 // check contribution guide in the README.md
 
-                let contributeHeading = this.findBestMatch(["Contributing","contribution","contribution guide","how to contribute"],rawHeadings,80);
+                let contributeHeading = this.findBestMatch(["Contributing", "contribution", "contribution guide", "how to contribute"], rawHeadings, 80);
 
                 if (contributeHeading) {
 
