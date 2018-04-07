@@ -564,7 +564,7 @@ class Checker {
 
     get() {
 
-        return this.report.results;
+        return this.report;
 
     }
 
