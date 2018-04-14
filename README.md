@@ -10,31 +10,25 @@ $ npm i --save github-hope
 ```javascript
 const hope = require('gihub-hope')
 
-hope.evaluate('https://github.com/HackaIran/HOPE.git').then(result => {
+hope.evaluate('https://github.com/HackaIran/HOPE.git',someStrategy || null).then(result => {
     
     console.log(result);
-    // Console logs:
-    // {
-    //   quality: 0.8,
-    //   results: [
-    //      {
-    //        type: 'license',
-    //        status: 'fail',
-    //        message: 'There is no license',
-    //      },
-    //      {
-    //         type: 'readme',
-    //         status: 'success',
-    //         message: 'Readme file exists',
-    //       },
-    //       {
-    //         type: 'readme-project-name',
-    //         status: 'warning',
-    //         message: 'Project name exists but there are misspellings',
-    //       },
-    //       ...
-    //   ]
-    // }
+//     { quality: '214.29',
+//   results:
+//    [ general: [ [Object], [Object], [Object], [Object] ],
+//      readme: [ [Object],
+//        [Object],
+//        [Object],
+//        [Object],
+//        [Object],
+//        [Object],
+//        [Object],
+//        [Object],
+//        [Object] ] 
+            // ],
+//        .
+//        .
+//        . }
 
 })
 ```
@@ -56,4 +50,4 @@ npm version minor
 npm version major
 ```
 ## License
-MIT
+ISC
