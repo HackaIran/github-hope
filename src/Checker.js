@@ -459,9 +459,15 @@ class Checker {
 
                         } else {
 
-                            // best match matched nothing
+                            if(rule.captures[0].hasOwnProperty("notExist")){
+                                
+                                // best match matched nothing
 
-                            this.report.results[fileName].push(rule.captures[0].notExist)
+                                this.report.results[fileName].push(rule.captures[0].notExist)
+
+                            }
+
+                            
 
                         }
 
