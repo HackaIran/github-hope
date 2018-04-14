@@ -1,3 +1,3 @@
-const hope = require('./src');
+const hope = require('./lib');
 
 module.exports = hope
