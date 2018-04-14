@@ -42,9 +42,7 @@ class Checker {
 
         this.report = {
             quality: 0,
-            results: [
-
-            ]
+            results: {}
         };
 
     }
