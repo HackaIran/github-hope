@@ -13,7 +13,7 @@ const hope = require('gihub-hope')
 hope.evaluate('https://github.com/HackaIran/HOPE.git',someStrategy || null).then(result => {
     
     console.log(result);
-//     { quality: '80.00',
+//     { quality: 0.83,
 //   results:
 //    [ general: [ [Object], [Object], [Object], [Object] ],
 //      readme: [ [Object],
