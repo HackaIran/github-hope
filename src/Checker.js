@@ -6,7 +6,7 @@ const strategy = require('./strategy.config.js');
 
 class Checker {
 
-    constructor(url,config) {
+    constructor(url, config) {
 
         // Regex of the url
 
@@ -282,7 +282,7 @@ class Checker {
                             // it exists
 
                             this.report.results[fileName].push(rule.messages.exist);
-                            
+
                             // increment mark
 
                             this.incrementMark(rule.messages.exist.mark);
@@ -302,18 +302,21 @@ class Checker {
 
                                     // not proper type
 
-                                    this.report.results[fileName].push(rule.messages.headingTypeNotOk);
-
+                                    if (rule.messages.hasOwnProperty("headingTypeNotOk")) {
+                                        this.report.results[fileName].push(rule.messages.headingTypeNotOk);
+                                    }
 
                                 } else {
 
-                                    // proper type
+                                    if (rule.messages.hasOwnProperty("headingTypeOk")) {
+                                        // proper type
 
-                                    this.report.results[fileName].push(rule.messages.headingTypeOk);
+                                        this.report.results[fileName].push(rule.messages.headingTypeOk);
 
-                                    // increment mark
+                                        // increment mark
 
-                                    this.incrementMark(rule.messages.headingTypeOk.mark);
+                                        this.incrementMark(rule.messages.headingTypeOk.mark);
+                                    }
 
                                 }
                             }
@@ -421,7 +424,7 @@ class Checker {
                                         index++;
 
                                     }
-                                    
+
                                 } else {
 
                                     // not exists
@@ -433,7 +436,7 @@ class Checker {
                             } else {
 
                                 reject(new Error("regex is invalid!"));
-                                
+
                             }
 
 
@@ -580,7 +583,7 @@ class Checker {
      * 
      */
 
-    incrementMark(plusMark){
+    incrementMark(plusMark) {
 
         this.mark += plusMark;
 
