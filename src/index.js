@@ -5,7 +5,7 @@ const Checker = require("./Checker");
  * @param {string} url a git repository's url which will be checked
  * @returns {Promise} a promise including test results
  */
-const evaluate = (url) => {
+const evaluate = (url,config) => {
 
     return new Promise ((resolve, reject) => {
 
@@ -17,7 +17,7 @@ const evaluate = (url) => {
 
         // Let's initiate checker
 
-        const checker = new Checker(url);
+        const checker = new Checker(url,config);
 
         // Let's parse the repository
 

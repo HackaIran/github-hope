@@ -2,11 +2,11 @@ const axios = require("axios");
 
 const stringSimilarity = require("string-similarity");
 
-//
+const strategy = require('./strategy.config.js');
 
 class Checker {
 
-    constructor(url) {
+    constructor(url,config) {
 
         // Regex of the url
 
@@ -18,13 +18,25 @@ class Checker {
 
         this.url = url;
 
-        this.repositoryName = urlParts[2];
+        // for general infos of the repository
 
-        this.owner = urlParts[1];
+        this.generalInfo = {};
+
+        this.generalInfo.repositoryName = urlParts[2];
+
+        this.generalInfo.owner = urlParts[1];
+
+        // strategy config file
+
+        this.strategy = config || strategy;
 
         // Critical files of the repository
 
         this.criticalFiles = {};
+
+        // mark
+
+        this.mark = 0;
 
         // Report properties
 
@@ -77,7 +89,7 @@ class Checker {
     getCommunity() {
 
         return new Promise((resolve, reject) => {
-            axios.get("https://api.github.com/repos/" + this.owner + "/" + this.repositoryName + "/community/profile", {
+            axios.get("https://api.github.com/repos/" + this.generalInfo.owner + "/" + this.generalInfo.repositoryName + "/community/profile", {
                 headers: {
                     'Accept': 'application/vnd.github.black-panther-preview+json'
                 }
@@ -94,12 +106,14 @@ class Checker {
      * 
      * For getting certain file from github
      * 
+     * @param {String} name - name of the file
+     * 
      */
 
     getFile(name) {
         return new Promise((resolve, reject) => {
 
-            axios.get("https://api.github.com/repos/" + this.owner + "/" + this.repositoryName + "/" + name).then((result) => {
+            axios.get("https://api.github.com/repos/" + this.generalInfo.owner + "/" + this.generalInfo.repositoryName + "/" + name).then((result) => {
                 axios.get(result.data.download_url).then((file) => {
                     resolve(file.data);
                 }).catch((e) => {
@@ -157,8 +171,10 @@ class Checker {
 
                 // Check for important files and README.md
 
-                this.importantFileChecker().then(() => {
-                    this.checkReadme().then(() => resolve(this.get()));
+                this.fileExistanceChecker().then(() => {
+
+                    this.checkInFiles().then(() => resolve(this.get()));
+
                 })
 
             }).catch(console.log)
@@ -168,91 +184,34 @@ class Checker {
 
     /**
      * 
-     * Check existance of critical files
+     * Check existance of specified files
      * 
      */
 
-    importantFileChecker() {
+    fileExistanceChecker() {
 
         return new Promise((resolve, reject) => {
 
-            // Check Code Of Conduct
+            let resultPrefix = "general";
 
-            if (this.criticalFiles.code_of_conduct) { // if code of conduct exists
+            this.report.results[resultPrefix] = [];
 
-                this.report.results.push({
-                    type: "Code of Conduct",
-                    status: "Success",
-                    message: "Yay! You have added a 'Code of Conduct' to your project."
-                });
 
-            } else {
+            for (let item in this.strategy.general) {
 
-                this.report.results.push({
-                    type: "Code of Conduct",
-                    status: "Fail",
-                    message: "I can’t find the Code of Conduct. Please add it using Contributor Covenant drop-in 'Code of Conduct'."
-                });
+                if (this.criticalFiles[item]) { // if code of conduct exists
 
-            }
+                    this.report.results[resultPrefix].push(this.strategy.general[item].exist);
 
-            // Let's check for contributing file
+                    // increment mark
 
-            if (this.criticalFiles.contributing) { // if contributing exists
+                    this.incrementMark(this.strategy.general[item].exist.mark);
 
-                this.report.results.push({
-                    type: "Contributing",
-                    status: "Success",
-                    message: "I found a 'CONTRIBUTING' file in your project. Good job!"
-                });
+                } else {
 
-            } else {
+                    this.report.results[resultPrefix].push(this.strategy.general[item].notExist);
 
-                this.report.results.push({
-                    type: "Contributing",
-                    status: "Fail",
-                    message: "Mmmm… Did you forget to create a 'CONTRIBUTING' file? Please add it."
-                });
-
-            }
-
-            // Let's check for license
-
-            if (this.criticalFiles.license) { // if license exists
-
-                this.report.results.push({
-                    type: "License",
-                    status: "Success",
-                    message: "Kudos! You have a chosen a license for your project. But is it chosen properly? If you’re not sure, take a look at our interactive license chooser guide."
-                });
-
-            } else {
-
-                this.report.results.push({
-                    type: "License",
-                    status: "Fail",
-                    message: "Whoops! I couldn’t find your 'LICENSE' file. If you want help to choose a license, use our interactive license chooser guide."
-                });
-
-            }
-
-            // Let's check for readme
-
-            if (this.criticalFiles.readme) { // if readme exists
-
-                this.report.results.push({
-                    type: "Readme",
-                    status: "Success",
-                    message: "Your project contains a 'README' file. Congrats!"
-                });
-
-            } else {
-
-                this.report.results.push({
-                    type: "Readme",
-                    status: "Fail",
-                    message: "Oops! It seems that your project does not contain a 'README' file. Please add it to pass this check."
-                });
+                }
 
             }
 
@@ -266,17 +225,23 @@ class Checker {
 
     /**
      * 
-     * Check readme for 
+     * Reads inside of file and performs the rules of the config
      * 
      */
 
-    checkReadme() {
+    checkInFiles() {
 
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
 
-            // Let's get the readme file
+            let inFiles = this.strategy.inFiles;
 
-            this.getFile("readme").then((file) => {
+            let fileIndex = 0;
+
+            for (let fileName in inFiles) {
+
+                this.report.results[fileName] = [];
+
+                let file = await this.getFile(fileName);
 
                 file = this.html2mdHeadings(file);
                 file = this.rawHeadings(file);
@@ -296,261 +261,198 @@ class Checker {
 
                 file += "\n#"; // For regex
 
-                // Let's check whether it has a heading or not
+                for (let rule of inFiles[fileName]) {
 
-                let properHeading = this.findBestMatch([this.repositoryName], rawHeadings, 80);
+                    // Let's parse the pattern
 
-                if (properHeading) {
+                    if (rule.pattern instanceof Array && rule.heading) {
 
-                    // has heading
+                        // Let's parse array
 
-                    if (!/#{1}[^#]+/.test(headings.filter(item => {
-                            if (item[1] == properHeading) { // find the text with md style
-                                return item[0]
+                        rule.pattern = this.parsePatternArray(rule.pattern);
+
+                        // let's find proper text
+
+                        let properText = this.findBestMatch(rule.pattern, rawHeadings, 80);
+
+                        // check existance
+
+                        if (properText) {
+
+                            // it exists
+
+                            this.report.results[fileName].push(rule.messages.exist);
+                            
+                            // increment mark
+
+                            this.incrementMark(rule.messages.exist.mark);
+
+                            // check heading type
+
+                            if (rule.hasOwnProperty("headingType")) {
+
+                                let headingTypeRegEx = new RegExp("#{" + rule.headingType + "}[^#]+");
+
+                                if (!headingTypeRegEx.test(headings.filter(item => {
+                                        if (item[1].trim() == properText.trim()) { // find the text with md style
+                                            return item[0]
+                                        }
+
+                                    }))) {
+
+                                    // not proper type
+
+                                    this.report.results[fileName].push(rule.messages.headingTypeNotOk);
+
+
+                                } else {
+
+                                    // proper type
+
+                                    this.report.results[fileName].push(rule.messages.headingTypeOk);
+
+                                    // increment mark
+
+                                    this.incrementMark(rule.messages.headingTypeOk.mark);
+
+                                }
                             }
-                        }))) {
-                        // it is not in h1
 
-                        this.report.results.push({
-                            type: "readme-project-name",
-                            status: "warning",
-                            message: "Your project name is not in #..."
-                        });
-
-
-                    }
-
-                    this.report.results.push({
-                        type: "readme-project-name",
-                        status: "success",
-                        message: "I can see your project name.👀"
-                    });
-
-                    // Now that it has a heading for his/her project, let's check the description of it
-
-                    let descriptionRegex = new RegExp(properHeading + '(.+?)#', 's');
-
-                    let description = descriptionRegex.exec(file);
-
-                    description = description[1].trim()
-
-                    if (description) {
-
-                        // it has description
-
-                        this.report.results.push({
-                            type: "readme-description",
-                            status: "Success",
-                            message: "Thanks for adding a Description about your project."
-                        });
+                        } else {
+                            this.report.results[fileName].push(rule.messages.notExist);
+                        }
 
                     } else {
-                        this.report.results.push({
-                            type: "readme-description",
-                            status: "Fail",
-                            message: "Add a brief description about your project, please."
-                        });
+
+                        // global pattern
+
+                        // parse the pattern
+
+                        if (rule.pattern = this.parseRegExPattern(rule.pattern, rawHeadings)) {
+
+                            let rulePattern;
+
+                            if ((rulePattern = /\/(.+)\/(.*)/i.exec(rule.pattern)) !== null) {
+
+                                rulePattern = new RegExp(rulePattern[1], rulePattern[2]);
+
+                                let result;
+
+                                if ((result = rulePattern.exec(file)) !== null) {
+
+                                    let index = 0;
+
+                                    for (let capture of rule.captures) {
+
+                                        if (Object.keys(capture).length) { // if not empty
+
+                                            // success
+
+                                            this.report.results[fileName].push(capture.messages.exist);
+
+                                            // increment mark
+
+                                            this.incrementMark(capture.messages.exist.mark);
+
+                                            // let's check whether minLength is ok or not...;)
+
+                                            if (capture.hasOwnProperty("minLength")) {
+
+                                                // eleminate html tags
+
+                                                let resultText;
+
+                                                resultText = this.eliminateHTMLTags(result[index]).trim();
+
+                                                if (resultText.length >= capture.minLength) {
+
+                                                    // success
+
+                                                    this.report.results[fileName].push(capture.messages.minLengthOk);
+
+                                                    // increment mark
+
+                                                    this.incrementMark(capture.messages.minLengthOk.mark);
+
+                                                } else {
+
+                                                    // oops
+
+                                                    this.report.results[fileName].push(capture.messages.minLengthNotOk);
+
+                                                }
+
+                                            }
+
+                                            // let's check whether maxLength is ok or not...;)
+
+                                            if (capture.hasOwnProperty("maxLength")) {
+
+                                                // eleminate html tags
+
+                                                let resultText;
+
+                                                resultText = this.eliminateHTMLTags(result[index]).trim();
+
+                                                if (resultText.length < capture.maxLength) {
+
+                                                    // success
+
+                                                    this.report.results[fileName].push(capture.messages.maxLengthOk);
+
+                                                    // increment mark
+
+                                                    this.incrementMark(capture.messages.maxLengthOk.mark);
+
+                                                } else {
+
+                                                    // oops
+
+                                                    this.report.results[fileName].push(capture.messages.maxLengthNotOk);
+
+                                                }
+
+                                            }
+
+                                        }
+
+                                        // go to the next captured section
+
+                                        index++;
+
+                                    }
+                                    
+                                } else {
+
+                                    // not exists
+
+                                    this.report.results[fileName].push(captures[0].messages.notExist);
+
+                                }
+
+                            } else {
+
+                                reject(new Error("regex is invalid!"));
+                                
+                            }
+
+
+
+                        } else {
+
+                            // best match matched nothing
+
+                            this.report.results[fileName].push(rule.messages.notExist)
+
+                        }
+
                     }
-
-
-                } else {
-                    // Doesn't have a heading
-
-                    this.report.results.push({
-                        type: "readme-project-name",
-                        status: "Fail",
-                        message: "Your project doesn’t have a name!? Please use our guide to choose a name for it."
-                    });
 
                 }
 
-                // Let's check for Installation Guide
+            }
 
-                let properInstallationHeading = this.findBestMatch(["Install", "Installation", "Installation Guide"], rawHeadings, 80);
-
-                if (properInstallationHeading) {
-
-                    // There is an installation guide
-
-                    // Let's check for description
-
-                    let descriptionRegex = new RegExp(properInstallationHeading + '(.+?)#', 's');
-
-                    let description = descriptionRegex.exec(file);
-
-                    description = description[1].trim()
-
-                    if (description) {
-
-                        // it has description
-
-                        this.report.results.push({
-                            type: "readme-installtaion-guide-description",
-                            status: "Success",
-                            message: "Thanks for adding a Description about Installation Guide."
-                        });
-
-                    } else {
-                        this.report.results.push({
-                            type: "readme-installtaion-guide-description",
-                            status: "Fail",
-                            message: "Add a brief Installation Guide about your project, please."
-                        });
-                    }
-
-                } else {
-
-                    // There is not installation guides
-
-                    this.report.results.push({
-                        type: "readme-installation-guide",
-                        status: "Fail",
-                        message: "Please add a Installation Guide in your README file."
-                    });
-
-                }
-
-                // Let's check for Usage Guide
-
-                let properUsageHeading = this.findBestMatch(["Usage", "How to Use","Examples","Example of Use"], rawHeadings, 80);
-
-                if (properUsageHeading) {
-
-                    // There is an usage guide
-
-                    // Let's check for description
-
-                    let descriptionRegex = new RegExp(properUsageHeading + '(.+?)#', 's');
-
-                    let description = descriptionRegex.exec(file);
-
-                    description = description[1].trim()
-
-                    if (description) {
-
-                        // it has description
-
-                        this.report.results.push({
-                            type: "readme-usage-guide-description",
-                            status: "Success",
-                            message: "Thanks for adding a Description about Usage Guide."
-                        });
-
-                    } else {
-                        this.report.results.push({
-                            type: "readme-usage-guide-description",
-                            status: "Fail",
-                            message: "Add a brief Usage Guide about your project, please."
-                        });
-                    }
-
-                } else {
-
-                    // There is not usage guides
-
-                    this.report.results.push({
-                        type: "readme-usage-guide",
-                        status: "Fail",
-                        message: "Please add a Usage Guide in your README file."
-                    });
-
-                }
-
-                // check license in README.md
-
-                let licenseHeading = this.findBestMatch(["license"], rawHeadings, 80);
-
-                if (licenseHeading) {
-
-                    // There is an license
-
-                    // Let's check for description
-
-                    let descriptionRegex = new RegExp(licenseHeading + '(.+?)#', 's');
-
-                    let description = descriptionRegex.exec(file);
-
-                    description = description[1].trim()
-
-                    if (description) {
-
-                        // it has description
-
-                        this.report.results.push({
-                            type: "readme-license",
-                            status: "Success",
-                            message: "Thanks for adding a License in README.md."
-                        });
-
-                    } else {
-                        this.report.results.push({
-                            type: "readme-license",
-                            status: "Fail",
-                            message: "Add a license into README.md, please."
-                        });
-                    }
-
-                } else {
-
-                    // There is no license
-
-                    this.report.results.push({
-                        type: "readme-license",
-                        status: "Fail",
-                        message: "Please add a license in your README file."
-                    });
-
-                }
-
-                // check contribution guide in the README.md
-
-                let contributeHeading = this.findBestMatch(["Contributing", "contribution", "contribution guide", "how to contribute"], rawHeadings, 80);
-
-                if (contributeHeading) {
-
-                    // There is an contribution guide
-
-                    // Let's check for description
-
-                    let descriptionRegex = new RegExp(contributeHeading + '(.+?)#', 's');
-
-                    let description = descriptionRegex.exec(file);
-
-                    description = description[1].trim()
-
-                    if (description) {
-
-                        // it has description
-
-                        this.report.results.push({
-                            type: "readme-contribution-guide",
-                            status: "Success",
-                            message: "Thanks for adding a contribution guide in README.md."
-                        });
-
-                    } else {
-                        this.report.results.push({
-                            type: "readme-contribution-guide",
-                            status: "Fail",
-                            message: "Add a contribution guide into README.md, please."
-                        });
-                    }
-
-                } else {
-
-                    // There is no license
-
-                    this.report.results.push({
-                        type: "readme-contribution-guide",
-                        status: "Fail",
-                        message: "Please add a contribution guide in your README file."
-                    });
-
-                }
-
-                resolve()
-
-            })
+            resolve();
 
         })
 
@@ -558,11 +460,145 @@ class Checker {
 
     /**
      * 
-     * Get the result
+     * Parses %% variables and parses %[]% arrays in regex
+     * 
+     * @param {String} pattern - The pattern that should be parsed
+     * 
+     * @param {Array} rawHeadings
+     * 
+     */
+
+    parseRegExPattern(pattern, rawHeadings) {
+
+        let arrayVarRegEx = /(\%\[.*)%(.+)%(.*\]\%)/i;
+
+        if (arrayVarRegEx.test(pattern)) {
+
+            let result;
+
+            while ((result = arrayVarRegEx.exec(pattern)) !== null) {
+
+                if (this.getGeneralProperty(result[2])) {
+                    pattern = pattern.replace(arrayVarRegEx, "$1" + this.getGeneralProperty(result[2]) + "$3");
+                } else {
+                    pattern = pattern.replace(arrayVarRegEx, "$1$3");
+                }
+
+            }
+
+
+        }
+
+        let arrayRegEx = /%\[(.+)\]%/i;
+
+        if (arrayRegEx.test(pattern)) {
+
+            let result;
+
+            let properText;
+
+            while ((result = arrayRegEx.exec(pattern)) !== null) {
+
+                if (properText = this.findBestMatch(result[1].split(','), rawHeadings, 80)) {
+                    pattern = pattern.replace(arrayRegEx, properText);
+                } else {
+                    // no match
+                    return false;
+                }
+
+            }
+
+
+        }
+
+        return pattern;
+
+    }
+
+    /**
+     * 
+     * Parses %% variables in array
+     * 
+     * @param {Array} patternArray - The array that should be parsed
+     * 
+     */
+
+    parsePatternArray(patternArray) {
+
+        for (let key in patternArray) {
+
+            if (/%(.+)%/i.test(patternArray[key])) {
+                let result = /%(.+)%/i.exec(patternArray[key]);
+                if (this.getGeneralProperty(result[1])) {
+                    patternArray[key] = this.getGeneralProperty(result[1]);
+                } else {
+                    patternArray[key] = "";
+                }
+            }
+
+        }
+
+        return patternArray;
+    }
+
+    /**
+     * 
+     * Returns general property with certain key
+     * 
+     * @param {String} key - Key of the param
+     * 
+     */
+
+    getGeneralProperty(key) {
+        if (this.generalInfo.hasOwnProperty(key)) {
+            return this.generalInfo[key];
+        }
+        return false;
+    }
+
+    /**
+     * 
+     * Deletes HTML tags
+     * 
+     * @param {String} HTML - The text that should be purified
+     * 
+     */
+
+    eliminateHTMLTags(html) {
+
+        html = html.replace(/<(.+)>(.+)<\/\1>/s, "$2");
+
+        return html; //plain text
+
+    }
+
+    /**
+     * 
+     * Increments the mark
+     * 
+     * @param {Number} plusMark - The number that should be added to the mark
+     * 
+     */
+
+    incrementMark(plusMark){
+
+        this.mark += plusMark;
+
+    }
+
+    /**
+     * 
+     * Parses the result
      * 
      */
 
     get() {
+
+        // convert mark to percent and assign it to quality
+
+        this.report.quality = (this.mark / this.strategy.maxMark) * 100;
+
+        this.report.quality = this.report.quality.toFixed(2);
 
         return this.report;
 
