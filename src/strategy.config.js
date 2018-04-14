@@ -13,7 +13,7 @@ module.exports = {
                 type: "error"
             }
         },
-        code_of_conduct:{
+        code_of_conduct: {
             exist: {
                 heading: "Code of Conduct Existance",
                 message: "Yay! You have added a 'Code of Conduct' to your project.",
@@ -26,7 +26,7 @@ module.exports = {
                 type: "error"
             }
         },
-        contributing:{
+        contributing: {
             exist: {
                 heading: "",
                 message: "I found a 'CONTRIBUTING' file in your project. Good job!",
@@ -39,7 +39,7 @@ module.exports = {
                 type: "error"
             }
         },
-        license:{
+        license: {
             exist: {
                 heading: "License Existance",
                 message: "Kudos! You have a chosen a license for your project. But is it chosen properly? If you’re not sure, take a look at our interactive license chooser guide.",
@@ -54,12 +54,11 @@ module.exports = {
         }
     },
     inFiles: {
-        readme: [
-        {
+        readme: [{
             heading: true,
             pattern: ['%repositoryName%'],
-            headingType:1,
-            messages:{
+            headingType: 1,
+            messages: {
                 exist: {
                     heading: "in Readme Project Name Existance",
                     message: "I can see your project name.👀",
@@ -71,21 +70,20 @@ module.exports = {
                     message: "Your project doesn’t have a name!? Please use our guide to choose a name for it.",
                     type: "error"
                 },
-                headingTypeNotOk:{
+                headingTypeNotOk: {
                     heading: "in Readme Project Name Place",
                     message: "Your project name is not in #...",
                     type: "warning"
                 }
             }
-            
-        },{
+
+        }, {
             heading: false,
             pattern: "/# %[%repositoryName%]%(.+?)#/is",
-            captures:[
-                {},
+            captures: [{},
                 {
                     minLength: 20,
-                    messages:{
+                    messages: {
                         exist: {
                             heading: "in Readme Short Description",
                             message: "Thanks for adding a Description about your project.",
@@ -105,10 +103,10 @@ module.exports = {
                     }
                 }
             ]
-        },{
+        }, {
             heading: true,
-            pattern: ['Installation Guide','Installation','Install'],
-            messages:{
+            pattern: ['Installation Guide', 'Installation', 'Install'],
+            messages: {
                 exist: {
                     heading: "in Readme Installation Guide Existance",
                     message: "Thanks for adding a Description about Installation Guide.",
@@ -121,10 +119,10 @@ module.exports = {
                     type: "error"
                 }
             }
-        },{
+        }, {
             heading: true,
-            pattern: ['Usage','How to Use','Examples','Example of Use'],
-            messages:{
+            pattern: ['Usage', 'How to Use', 'Examples', 'Example of Use'],
+            messages: {
                 exist: {
                     heading: "in Readme Usage Guide Existance",
                     message: "I’m so thankful that you have added a Usage Guide.",
@@ -137,10 +135,10 @@ module.exports = {
                     type: "error"
                 }
             }
-        },{
+        }, {
             heading: true,
-            pattern: ['Contribution Guide','contribution','Contributing','how to contribute'],
-            messages:{
+            pattern: ['Contribution Guide', 'contribution', 'Contributing', 'how to contribute'],
+            messages: {
                 exist: {
                     heading: "in Readme Contribution Guide Existance",
                     message: "Thanks for adding a contribution guide in README.md.",
@@ -153,10 +151,10 @@ module.exports = {
                     type: "error"
                 }
             }
-        },{
+        }, {
             heading: true,
             pattern: ['license'],
-            messages:{
+            messages: {
                 exist: {
                     heading: "in Readme License Existance",
                     message: "Thanks for adding a license in README.md.",
@@ -169,14 +167,13 @@ module.exports = {
                     type: "error"
                 }
             }
-        },{
+        }, {
             heading: false,
             pattern: "/# %[Installation Guide,Installation,Install]%(.+?)#/is",
-            captures:[
-                {},
+            captures: [{},
                 {
                     minLength: 20,
-                    messages:{
+                    messages: {
                         exist: {
                             heading: "in Readme Installation Guide Description",
                             message: "Thanks for adding a description about instalation.",
@@ -196,14 +193,13 @@ module.exports = {
                     }
                 }
             ]
-        },{
+        }, {
             heading: false,
             pattern: "/# %[Usage,How to Use,Examples,Example of Use]%(.+?)#/is",
-            captures:[
-                {},
+            captures: [{},
                 {
                     minLength: 20,
-                    messages:{
+                    messages: {
                         exist: {
                             heading: "in Readme Usage Guide Description",
                             message: "Thanks for adding a description about usage.",
@@ -223,14 +219,13 @@ module.exports = {
                     }
                 }
             ]
-        },{
+        }, {
             heading: false,
             pattern: "/# %[Contribution Guide,contribution,Contributing,how to contribute]%(.+?)#/is",
-            captures:[
-                {},
+            captures: [{},
                 {
                     minLength: 20,
-                    messages:{
+                    messages: {
                         exist: {
                             heading: "in Readme Contribution Guide Description",
                             message: "Thanks for adding a description about contribution.",
@@ -250,14 +245,13 @@ module.exports = {
                     }
                 }
             ]
-        },{
+        }, {
             heading: false,
             pattern: "/# %[license]%(.+?)#/is",
-            captures:[
-                {},
+            captures: [{},
                 {
                     minLength: 3,
-                    messages:{
+                    messages: {
                         exist: {
                             heading: "in Readme License Description",
                             message: "Thanks for adding a License to your project.",
@@ -279,5 +273,5 @@ module.exports = {
             ]
         }]
     },
-    maxMark: 7
+    maxMark: 10
 }
