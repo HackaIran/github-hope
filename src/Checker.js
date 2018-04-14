@@ -461,7 +461,7 @@ class Checker {
 
                             // best match matched nothing
 
-                            this.report.results[fileName].push(rule.messages.notExist)
+                            this.report.results[fileName].push(rule.captures[0].notExist)
 
                         }
 
