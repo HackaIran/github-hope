@@ -175,7 +175,9 @@ class Checker {
 
                 })
 
-            }).catch(console.log)
+            }).catch(e=>{
+                reject(e);
+            })
         })
 
     }
