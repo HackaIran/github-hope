@@ -369,19 +369,25 @@ class Checker {
 
                                                 if (resultText.length >= capture.minLength) {
 
-                                                    // success
+                                                    if(capture.messages.hasOwnProperty("minLengthOk")){
+                                                        // success
 
-                                                    this.report.results[fileName].push(capture.messages.minLengthOk);
+                                                        this.report.results[fileName].push(capture.messages.minLengthOk);
 
-                                                    // increment mark
+                                                        // increment mark
 
-                                                    this.incrementMark(capture.messages.minLengthOk.mark);
+                                                        this.incrementMark(capture.messages.minLengthOk.mark);
+                                                    }
 
                                                 } else {
 
-                                                    // oops
+                                                    if(capture.messages.hasOwnProperty("minLengthNotOk")){
 
-                                                    this.report.results[fileName].push(capture.messages.minLengthNotOk);
+                                                        // oops
+
+                                                        this.report.results[fileName].push(capture.messages.minLengthNotOk);
+
+                                                    }
 
                                                 }
 
@@ -399,19 +405,29 @@ class Checker {
 
                                                 if (resultText.length < capture.maxLength) {
 
-                                                    // success
+                                                    if(capture.messages.hasOwnProperty("maxLengthOk")){
 
-                                                    this.report.results[fileName].push(capture.messages.maxLengthOk);
+                                                        // success
 
-                                                    // increment mark
+                                                        this.report.results[fileName].push(capture.messages.maxLengthOk);
 
-                                                    this.incrementMark(capture.messages.maxLengthOk.mark);
+                                                        // increment mark
+
+                                                        this.incrementMark(capture.messages.maxLengthOk.mark);
+
+                                                    }
+
+                                                    
 
                                                 } else {
 
-                                                    // oops
+                                                    if(capture.messages.hasOwnProperty("maxLengthNotOk")){
 
-                                                    this.report.results[fileName].push(capture.messages.maxLengthNotOk);
+                                                        // oops
+
+                                                        this.report.results[fileName].push(capture.messages.maxLengthNotOk);
+
+                                                    }
 
                                                 }
 
