@@ -21,7 +21,7 @@ const evaluate = (url,config) => {
 
         // Let's parse the repository
 
-        checker.parse().then(resolve);
+        checker.parse().then(resolve).catch(reject);
 
     })
 
