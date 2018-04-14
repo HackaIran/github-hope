@@ -621,9 +621,9 @@ class Checker {
 
         // convert mark to percent and assign it to quality
 
-        this.report.quality = (this.mark / this.strategy.maxMark) * 100;
+        this.report.quality = this.mark / this.strategy.maxMark;
 
-        this.report.quality = this.report.quality.toFixed(2);
+        this.report.quality = parseFloat(this.report.quality.toFixed(2));
 
         return this.report;
 

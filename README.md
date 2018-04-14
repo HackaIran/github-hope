@@ -13,7 +13,7 @@ const hope = require('gihub-hope')
 hope.evaluate('https://github.com/HackaIran/HOPE.git',someStrategy || null).then(result => {
     
     console.log(result);
-//     { quality: '214.29',
+//     { quality: '80.00',
 //   results:
 //    [ general: [ [Object], [Object], [Object], [Object] ],
 //      readme: [ [Object],
@@ -50,4 +50,4 @@ npm version minor
 npm version major
 ```
 ## License
-ISC
+MIT

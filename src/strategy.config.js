@@ -10,7 +10,7 @@ module.exports = {
             notExist: {
                 heading: "Readme Existance",
                 message: "Oops! It seems that your project does not contain a 'README' file. Please add it to pass this check.",
-                type: "error"
+                type: "fail"
             }
         },
         code_of_conduct: {
@@ -23,12 +23,12 @@ module.exports = {
             notExist: {
                 heading: "Code of Conduct Existance",
                 message: "I can’t find the Code of Conduct. Please add it using Contributor Covenant drop-in 'Code of Conduct'",
-                type: "error"
+                type: "fail"
             }
         },
         contributing: {
             exist: {
-                heading: "",
+                heading: "Contributing Existance",
                 message: "I found a 'CONTRIBUTING' file in your project. Good job!",
                 type: "success",
                 mark: 1
@@ -36,7 +36,7 @@ module.exports = {
             notExist: {
                 heading: "Contributing Existance",
                 message: "Mmmm… Did you forget to create a 'CONTRIBUTING' file? Please add it.",
-                type: "error"
+                type: "fail"
             }
         },
         license: {
@@ -49,7 +49,7 @@ module.exports = {
             notExist: {
                 heading: "License Existance",
                 message: "hoops! I couldn’t find your 'LICENSE' file. If you want help to choose a license, use our interactive license chooser guide.",
-                type: "error"
+                type: "fail"
             }
         }
     },
@@ -68,7 +68,7 @@ module.exports = {
                 notExist: {
                     heading: "in Readme Project Name Existance",
                     message: "Your project doesn’t have a name!? Please use our guide to choose a name for it.",
-                    type: "error"
+                    type: "fail"
                 },
                 headingTypeNotOk: {
                     heading: "in Readme Project Name Place",
@@ -93,7 +93,7 @@ module.exports = {
                         notExist: {
                             heading: "in Readme Short Description",
                             message: "Add a brief description about your project, please.",
-                            type: "error"
+                            type: "fail"
                         },
                         minLengthNotOk: {
                             heading: "in Readme Short Description Length",
@@ -116,7 +116,7 @@ module.exports = {
                 notExist: {
                     heading: "in Readme Installation Guide Existance",
                     message: "Add a brief Installation Guide about your project, please.",
-                    type: "error"
+                    type: "fail"
                 }
             }
         }, {
@@ -132,7 +132,7 @@ module.exports = {
                 notExist: {
                     heading: "in Readme Usage Guide Existance",
                     message: "Please add a Usage Guide in your README file.",
-                    type: "error"
+                    type: "fail"
                 }
             }
         }, {
@@ -148,7 +148,7 @@ module.exports = {
                 notExist: {
                     heading: "in Readme contribution Guide Existance",
                     message: "Add a contribution guide into README.md, please.",
-                    type: "error"
+                    type: "fail"
                 }
             }
         }, {
@@ -164,7 +164,7 @@ module.exports = {
                 notExist: {
                     heading: "in Readme Usage Guide Existance",
                     message: "Add a license into README.md, please.",
-                    type: "error"
+                    type: "fail"
                 }
             }
         }, {
@@ -183,7 +183,7 @@ module.exports = {
                         notExist: {
                             heading: "in Readme Installation Guide Description",
                             message: "Add a brief installation guide to your Readme.md.",
-                            type: "error"
+                            type: "fail"
                         },
                         minLengthNotOk: {
                             heading: "in Readme Installation Guide Description",
@@ -209,7 +209,7 @@ module.exports = {
                         notExist: {
                             heading: "in Readme Usage Guide Description",
                             message: "Add a brief usage to your Readme.md.",
-                            type: "error"
+                            type: "fail"
                         },
                         minLengthNotOk: {
                             heading: "in Readme Usage Guide Description",
@@ -235,7 +235,7 @@ module.exports = {
                         notExist: {
                             heading: "in Readme Contribution Guide Description",
                             message: "Add a brief contribution to your Readme.md.",
-                            type: "error"
+                            type: "fail"
                         },
                         minLengthNotOk: {
                             heading: "in Readme Contribution Guide Description",
@@ -261,7 +261,7 @@ module.exports = {
                         notExist: {
                             heading: "in Readme Licensee Description",
                             message: "Add a License to your Readme.md.",
-                            type: "error"
+                            type: "fail"
                         },
                         minLengthNotOk: {
                             heading: "in Readme License Description",
@@ -273,5 +273,5 @@ module.exports = {
             ]
         }]
     },
-    maxMark: 10
+    maxMark: 18
 }
