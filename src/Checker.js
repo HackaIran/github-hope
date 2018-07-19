@@ -138,6 +138,10 @@ class Checker {
 
     findBestMatch(mainStrings, texts, minPercentage) {
 
+        if(texts.length == 0){
+            return false;
+        }
+
         let result;
 
         for (let index in mainStrings) {
@@ -445,7 +449,7 @@ class Checker {
 
                                     // not exists
 
-                                    this.report.results[fileName].push(captures[0].messages.notExist);
+                                    this.report.results[fileName].push(rule.captures[1].messages.notExist);
 
                                 }
 
