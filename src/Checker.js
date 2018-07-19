@@ -237,7 +237,9 @@ class Checker {
 
         return new Promise(async (resolve, reject) => {
 
-            let inFiles = this.strategy.inFiles;
+            let inFiles = JSON.stringify(this.strategy.inFiles);
+
+            inFiles = JSON.parse(inFiles);
 
             let fileIndex = 0;
 
